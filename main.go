@@ -3,9 +3,12 @@ package main
 import (
 	"context"
 	"fmt"
+	"os"
 	"time"
 
-	"github.com/zmb3/spotify"
+	spotifyauth "github.com/zmb3/spotify/v2/auth"
+
+	"github.com/zmb3/spotify/v2"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
 )
@@ -16,20 +19,21 @@ type Session struct {
 	songs, dnd          bool
 }
 
-func spotifyAuth() *oauth2.Token {
+func spotifyAuth() (context.Context, *oauth2.Token) {
+	ctx := context.Background()
 	authConfig := &clientcredentials.Config{
-		ClientID:     "",
-		ClientSecret: "",
-		TokenURL:     spotify.TokenURL,
+		ClientID:     os.Getenv("SPOTIFY_CLIENT_ID"),
+		ClientSecret: os.Getenv("SPOTIFY_CLIENT_SECRET"),
+		TokenURL:     spotifyauth.TokenURL,
 	}
 
 	accessToken, err := authConfig.Token(context.Background())
 
 	if err != nil {
 		fmt.Println("Error getting access token: ", err)
-		return nil
+		return nil, nil
 	} else {
-		return accessToken
+		return ctx, accessToken
 	}
 }
 
@@ -44,11 +48,13 @@ func startSession(session Session) {
 
 	// Play music
 	if session.songs {
-		fmt.Println("Playing music")
 
-		client := spotify.Authenticator{}.NewClient(spotifyAuth())
-		// begin playing music
-		fmt.Println(client)
+		ctx, authToken := spotifyAuth()
+		httpClient := spotifyauth.New().Client(ctx, authToken)
+		client := spotify.New(httpClient)
+
+		client.Play(ctx)
+		fmt.Println("Playing music")
 	}
 
 	// Start session
