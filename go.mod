@@ -10,7 +10,7 @@ require (
 	golang.org/x/exp/typeparams v0.0.0-20221212164502-fae10dda9338 // indirect
 	golang.org/x/mod v0.15.0 // indirect
 	golang.org/x/net v0.23.0 // indirect
-	golang.org/x/oauth2 v0.0.0-20210810183815-faf39c7919d5 // indirect
+	golang.org/x/oauth2 v0.20.0 // indirect
 	golang.org/x/sync v0.6.0 // indirect
 	golang.org/x/sys v0.18.0 // indirect
 	golang.org/x/telemetry v0.0.0-20240209200032-7b892fcb8a78 // indirect
