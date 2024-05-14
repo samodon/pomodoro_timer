@@ -1,14 +1,36 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"time"
+
+	"github.com/zmb3/spotify"
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/clientcredentials"
 )
 
 type Session struct {
 	name                string
 	lenght, breakLenght int
 	songs, dnd          bool
+}
+
+func spotifyAuth() *oauth2.Token {
+	authConfig := &clientcredentials.Config{
+		ClientID:     "535ab5080f5b417b8cd4bedfa42d3bdb",
+		ClientSecret: "0be747f6565e439999dc3685c712229c",
+		TokenURL:     spotify.TokenURL,
+	}
+
+	accessToken, err := authConfig.Token(context.Background())
+
+	if err != nil {
+		fmt.Println("Error getting access token: ", err)
+		return nil
+	} else {
+		return accessToken
+	}
 }
 
 func startSession(session Session) {
@@ -23,13 +45,16 @@ func startSession(session Session) {
 	// Play music
 	if session.songs {
 		fmt.Println("Playing music")
+
+		client := spotify.Authenticator{}.NewClient(spotifyAuth())
+		// begin playing music
+		fmt.Println(client)
 	}
 
 	// Start session
 	show := true
 	for duration < (session.lenght * 60) {
 		duration = int(time.Since(start_time).Seconds())
-		// fmt.Println()
 
 		if session.lenght*60-duration < 60 && show {
 			fmt.Println("Session is about to end in 1 minute, begin wrapping up")
@@ -53,6 +78,7 @@ func breaksession(seconds int) {
 func main() {
 	newsession := true
 	for newsession {
+
 		var session Session
 		fmt.Print("Enter the name of this session: ")
 		fmt.Scan(&session.name)
