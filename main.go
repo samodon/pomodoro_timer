@@ -18,8 +18,8 @@ type Session struct {
 
 func spotifyAuth() *oauth2.Token {
 	authConfig := &clientcredentials.Config{
-		ClientID:     "535ab5080f5b417b8cd4bedfa42d3bdb",
-		ClientSecret: "0be747f6565e439999dc3685c712229c",
+		ClientID:     "",
+		ClientSecret: "",
 		TokenURL:     spotify.TokenURL,
 	}
 
