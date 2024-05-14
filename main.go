@@ -57,7 +57,7 @@ func startSession(session Session) {
 		fmt.Println("Playing music")
 	}
 
-	// Start session
+	// Start Timer
 	show := true
 	for duration < (session.lenght * 60) {
 		duration = int(time.Since(start_time).Seconds())
