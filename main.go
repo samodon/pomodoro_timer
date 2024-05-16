@@ -26,7 +26,9 @@ func spotifyAuth() (context.Context, *oauth2.Token) {
 		ClientSecret: os.Getenv("SPOTIFY_CLIENT_SECRET"),
 		TokenURL:     spotifyauth.TokenURL,
 	}
-
+	fmt.Println("Client ID: ", os.Getenv("SPOTIFY_CLIENT_ID"))
+	fmt.Println("Client Secret: ", os.Getenv("SPOTIFY_CLIENT_SECRET"))
+	fmt.Println("Token URL: ", spotifyauth.TokenURL)
 	accessToken, err := authConfig.Token(context.Background())
 
 	if err != nil {
@@ -50,8 +52,33 @@ func startSession(session Session) {
 	if session.songs {
 
 		ctx, authToken := spotifyAuth()
+		if authToken == nil {
+			fmt.Println("Error getting access token")
+			return
+		}
 		httpClient := spotifyauth.New().Client(ctx, authToken)
 		client := spotify.New(httpClient)
+
+		devices, err := client.PlayerDevices(ctx)
+		fmt.Println("Devices:", devices)
+		if err != nil {
+			fmt.Println("Error getting devices: ", err)
+			return
+		}
+
+		var deviceID spotify.ID
+		if len(devices) > 0 {
+			deviceID = devices[0].ID
+		} else {
+			fmt.Println("No devices found")
+			return
+		}
+
+		err = client.TransferPlayback(ctx, deviceID, false)
+		if err != nil {
+			fmt.Println("Error transfering playback: ", err)
+			return
+		}
 
 		client.Play(ctx)
 		fmt.Println("Playing music")
